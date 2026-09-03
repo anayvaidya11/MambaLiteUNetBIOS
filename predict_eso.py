@@ -60,8 +60,19 @@ def postprocess(prob, hw, threshold):
     return (np.array(up) >= threshold).astype(np.uint8)
 
 
-def load_model(ckpt_path):
+def load_state(ckpt_path):
+    """Model state dict from either checkpoint format train_eso.py writes: a plain state
+    dict (best-*.pth) or a training dict (latest.pth). The training dict holds numpy
+    scalars, which torch>=2.6 refuses under the default weights_only=True; these are our
+    own files, so they are loaded as trusted."""
     import torch
+    state = torch.load(ckpt_path, map_location='cpu', weights_only=False)
+    if 'model_state_dict' in state:
+        state = state['model_state_dict']
+    return state
+
+
+def load_model(ckpt_path):
     from models.MambaLiteUNet import MambaLiteUNet
     from configs.config_setting_eso import setting_config as cfg
 
@@ -69,10 +80,7 @@ def load_model(ckpt_path):
     model = MambaLiteUNet(num_classes=mc['num_classes'],
                           input_channels=mc['input_channels'],
                           c_list=mc['c_list'])
-    state = torch.load(ckpt_path, map_location='cpu')
-    if 'model_state_dict' in state:  # latest.pth stores a training checkpoint dict
-        state = state['model_state_dict']
-    model.load_state_dict(state, strict=True)
+    model.load_state_dict(load_state(ckpt_path), strict=True)
     return model.cuda().eval(), cfg.threshold
 
 

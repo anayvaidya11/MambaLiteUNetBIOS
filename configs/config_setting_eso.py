@@ -44,9 +44,13 @@ class setting_config:
     work_dir = 'results/' + network + '_' + datasets + '_' + datetime.now().strftime('%A_%d_%B_%Y_%Hh_%Mm_%Ss') + '/'
 
     print_interval = 20
-    val_interval = 10
+    val_interval = 1   # log val Dice every epoch (upstream: every 10th)
     save_interval = 100
     threshold = 0.5
+
+    # Re-estimate the attention gates' BatchNorm running statistics on this many training
+    # batches (no gradients) right before every validation pass. 0 = upstream behaviour.
+    bn_recalib_batches = 40
 
     opt = 'AdamW'
     lr = 0.001
@@ -56,6 +60,8 @@ class setting_config:
     amsgrad = False
 
     sch = 'CosineAnnealingLR'
-    T_max = 50
+    # One cosine decay over the whole run. Upstream uses T_max = 50 with 300 epochs and no
+    # restarts, so the LR climbed back to 1e-3 at epochs 100/200/300 (period-100 cycling).
+    T_max = epochs
     eta_min = 0.00001
     last_epoch = -1

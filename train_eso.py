@@ -7,6 +7,7 @@ from loader import *
 
 from models.MambaLiteUNet import MambaLiteUNet
 from engine import *
+from bn_recalib import recalibrate_bn
 import os
 import sys
 from datetime import datetime
@@ -117,6 +118,9 @@ def main(config):
             config,
             scaler=scaler
         )
+
+        if getattr(config, 'bn_recalib_batches', 0) > 0:
+            recalibrate_bn(model, train_loader, config.bn_recalib_batches)
 
         loss = val_one_epoch(
                 val_loader,

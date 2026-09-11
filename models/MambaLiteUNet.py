@@ -4,7 +4,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-from timm.models.layers import DropPath, trunc_normal_
+try:
+    from timm.models.layers import DropPath, trunc_normal_
+except ImportError:  # timm is only needed for these two helpers
+    from deploy.compat import DropPath, trunc_normal_
 from mamba_ssm import Mamba  # Ensure mamba_ssm is installed and accessible
 
 # Depth-Wise Convolution Module

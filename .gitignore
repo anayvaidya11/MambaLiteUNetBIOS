@@ -1,0 +1,13 @@
+
+# deployment artifacts (regenerated; engines are device-specific)
+deploy/onnx/
+deploy/engines/
+deploy/results/
+__pycache__/
+# copies of Peter's MCBNet scripts made on the Jetson for the baseline run (his code, not ours)
+deploy/baseline_mcbnet/hybridTRTinf_plot.py
+deploy/baseline_mcbnet/hybridTRTinf_helper.py
+deploy/baseline_mcbnet/trtrunner.py
+deploy/baseline_mcbnet/pylib/
+deploy/baseline_mcbnet/*.log
+.DS_Store
